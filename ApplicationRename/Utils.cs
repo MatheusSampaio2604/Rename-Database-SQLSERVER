@@ -13,6 +13,13 @@ namespace RenameDatabaseSQLSERVER
             Console.WriteLine(string.Concat("\n", new string(character, repeatInLine)));
         }
 
+        internal static void ConsoleSuccessText()
+        {
+            Console.ForegroundColor = ConsoleColor.DarkGreen;
+            Console.WriteLine("\n**********SUCCESS**********\n");
+            Console.ResetColor();
+        }
+
         internal static void ConsoleWarningText()
         {
             Console.ForegroundColor = ConsoleColor.DarkYellow;

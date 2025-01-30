@@ -76,8 +76,6 @@ namespace RenameDatabaseSQLSERVER
             }
         }
 
-
-
         static async Task DefineProperties()
         {
             switch (typeServiceSelected)
