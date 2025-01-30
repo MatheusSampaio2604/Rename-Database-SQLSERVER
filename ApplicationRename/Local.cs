@@ -23,12 +23,12 @@ namespace RenameDatabaseSQLSERVER
                     {
                         //await Task.Run(() => { 
                         File.Move(filePath, newFilePath);
-                        Console.WriteLine($"Arquivo renomeado: {filePath} -> {newFilePath}");
+                        Console.WriteLine($"File renamed: {filePath} -> {newFilePath}");
                         //});
                     }
                     catch (IOException ioEx) when (ioEx.Message.Contains("já existente"))
                     {
-                        Console.WriteLine($"Erro: O arquivo destino já existe. {newFilePath}");
+                        Console.WriteLine($"Error: Destination file already exists. {newFilePath}");
                     }
                 }
             }
@@ -48,12 +48,12 @@ namespace RenameDatabaseSQLSERVER
                     {
                         /*await Task.Run(() => {*/
                         Directory.Move(dirPath, newDirPath);
-                        Console.WriteLine($"Pasta renomeada: {dirPath} -> {newDirPath}");
+                        Console.WriteLine($"Folder renamed: {dirPath} -> {newDirPath}");
                         /* });*/
                     }
                     catch (IOException ioEx) when (ioEx.Message.Contains("já existente"))
                     {
-                        Console.WriteLine($"Erro: A pasta destino já existe. {newDirPath}");
+                        Console.WriteLine($"Error: Destination folder already exists. {newDirPath}");
                     }
                 }
             }
@@ -71,12 +71,12 @@ namespace RenameDatabaseSQLSERVER
                         content = content.Replace(oldName, newName/*, StringComparison.OrdinalIgnoreCase*/);
 
                         await File.WriteAllTextAsync(filePath, content);
-                        Console.WriteLine($"Conteúdo atualizado no arquivo: {filePath}");
+                        Console.WriteLine($"Updated content in the archive: {filePath}");
                     }
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"Erro ao processar o arquivo {filePath}: {ex.Message}");
+                    Console.WriteLine($"Error processing file {filePath}: {ex.Message}");
                 }
             }
 

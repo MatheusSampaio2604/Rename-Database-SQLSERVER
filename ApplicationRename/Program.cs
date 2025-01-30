@@ -39,11 +39,11 @@ namespace RenameDatabaseSQLSERVER
                         default:
                             return;
                     }
-                    Console.WriteLine("Renomeação completa.");
+                    Console.WriteLine("Complete rename.");
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"Erro: {ex.Message}");
+                    Console.WriteLine($"Error: {ex.Message}");
                 }
             } while (AskToRetry());
         }
@@ -103,7 +103,7 @@ namespace RenameDatabaseSQLSERVER
                         if (Directory.Exists(rootPath)) break;
 
                         Utils.ConsoleErrorText();
-                        Console.WriteLine("O diretório especificado não existe.");
+                        Console.WriteLine("The specified directory does not exist.");
                         Utils.ConsoleErrorText();
                     }
                     break;

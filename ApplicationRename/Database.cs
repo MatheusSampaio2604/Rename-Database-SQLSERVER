@@ -118,16 +118,16 @@ namespace RenameDatabaseSQLSERVER
                     if (column.Contains(oldString))
                     {
                         string newColumnName = column.Replace(oldString, newString);
-                        Console.WriteLine($"Renomeando coluna {column} na tabela {schema}.{table} para {newColumnName}...");
+                        Console.WriteLine($"Renaming column {column} of table {schema}.{table} to {newColumnName}...");
                         try
                         {
                             string renameQuery = $"EXEC sp_rename '{schema}.{table}.{column}', '{newColumnName}', 'COLUMN'";
                             await ExecuteCommandAsync(connection, renameQuery);
-                            Console.WriteLine("Coluna renomeada com sucesso.");
+                            Console.WriteLine("Column renamed successfully.");
                         }
                         catch (Exception ex)
                         {
-                            Console.WriteLine($"Erro ao renomear coluna {column}: {ex.Message}");
+                            Console.WriteLine($"Error renaming column {column}: {ex.Message}");
                         }
                     }
                 }
@@ -164,12 +164,12 @@ namespace RenameDatabaseSQLSERVER
                             command.Parameters.AddWithValue("@newValue", newString);
                             int rowsAffected = await command.ExecuteNonQueryAsync();
 
-                            Console.WriteLine($"{rowsAffected} registros atualizados na tabela {schema}.{table}.");
+                            Console.WriteLine($"{rowsAffected} records updated in the table {schema}.{table}.");
                         }
                     }
                     catch (Exception ex)
                     {
-                        Console.WriteLine($"Erro ao atualizar dados na tabela {schema}.{table}: {ex.Message}");
+                        Console.WriteLine($"Error updating data in table {schema}.{table}: {ex.Message}");
                     }
                 }
             }
@@ -182,17 +182,17 @@ namespace RenameDatabaseSQLSERVER
                 if (table.Contains(oldString))
                 {
                     string newTableName = table.Replace(oldString, newString);
-                    Console.WriteLine($"Renomeando tabela {schema}.{table} para {schema}.{newTableName}...");
+                    Console.WriteLine($"Renaming table {schema}.{table} for {schema}.{newTableName}...");
 
                     try
                     {
                         string renameQuery = $"EXEC sp_rename '{schema}.{table}', '{newTableName}'";
                         await ExecuteCommandAsync(connection, renameQuery);
-                        Console.WriteLine("Renomeação bem-sucedida.");
+                        Console.WriteLine("Successful rename.");
                     }
                     catch (Exception ex)
                     {
-                        Console.WriteLine($"Erro ao renomear {schema}.{table}: {ex.Message}");
+                        Console.WriteLine($"Error renaming {schema}.{table}: {ex.Message}");
                     }
                 }
             }
