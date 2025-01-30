@@ -1,114 +1,249 @@
 ﻿using Microsoft.Data.SqlClient;
 
+//Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=RCASCRANE;Persist Security Info=True;MultipleActiveResultSets=True;Connection Timeout=5
+
 namespace RenameDatabaseSQLSERVER
 {
     internal class Program
     {
+        private static int typeServiceSelected = 0;
 
-        private static async Task Main(string[] args)
+        private static string connectionString = string.Empty; // Database
+        private static string rootPath = string.Empty; // File Route
+
+        private static string oldString = string.Empty;
+        private static string newString = string.Empty;
+
+        static SqlConnection connection = new();
+
+        private static async Task Main()
         {
-            string connectionString = "Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=RCASCRANE;Persist Security Info=True;MultipleActiveResultSets=True;Connection Timeout=5";
-
-            //Console.WriteLine("Digite a string antiga:");
-            string oldString = "RCAS";
-
-            //Console.WriteLine("Digite a string nova:");
-            string newString = "AMV";
-
-            try
+            do
             {
-                await RenameDatabaseObjectsAsync(connectionString, oldString, newString);
-                Console.WriteLine("Renomeação completa para tabelas, colunas e dados.");
-            }
-            catch (Exception ex)
+                SelectServiceType();
+                await DefineProperties();
+                try
+                {
+                    switch (typeServiceSelected)
+                    {
+                        case 1: //Database
+                            Utils.WriteOnlyCharacter('*', 60);
+                            Console.WriteLine("Accessing the database...\n");
+                            await RenameDatabaseObjectsAsync();
+                            break;
+                        case 2: // Files
+                            Utils.WriteOnlyCharacter('*', 60);
+                            Console.WriteLine("\n\nAccessing the folder...\n\n");
+                            await RenameFilesAndFolders(rootPath, oldString, newString);
+                            break;
+                        default:
+                            return;
+                    }
+                    Console.WriteLine("Renomeação completa.");
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Erro: {ex.Message}");
+                }
+            } while (AskToRetry());
+        }
+
+        static bool AskToRetry()
+        {
+            Console.Write("\n Do you want to perform another renaming operation? (y/n): ");
+            string? response = Console.ReadLine()?.Trim().ToLower();
+            return response == "y" || response == "yes";
+        }
+
+        static void SelectServiceType()
+        {
+            int[] validValues = [1, 2];
+            while (true)
             {
-                Console.WriteLine($"Erro: {ex.Message}");
+                Console.WriteLine("\n Please, Select:\n 1) Rename Database;\n 2) Rename Files and Folders;\n ");
+                Console.Write("Value: ");
+                if (int.TryParse(Console.ReadLine()?.Trim(), out int value) && validValues.Contains(value))
+                {
+                    typeServiceSelected = value;
+                    break;
+                }
+                else
+                {
+                    Utils.ConsoleErrorText();
+                    Console.WriteLine("Invalid input. Please select a valid option.");
+                    Utils.ConsoleErrorText();
+                }
             }
         }
 
-
-        private static async Task RenameDatabaseObjectsAsync(string connectionString, string oldString, string newString)
+        static async Task DefineProperties()
         {
-            using SqlConnection connection = new(connectionString);
-            await connection.OpenAsync();
-
-            string[] tables = await GetTablesAsync(connection);
-            foreach (string table in tables) // Renomear tabelas
+            switch (typeServiceSelected)
             {
-                if (table.Contains(oldString))
-                {
-                    string newTableName = table.Replace(oldString, newString);
-                    Console.WriteLine($"Renomeando tabela {table} para {newTableName}...");
-                    await ExecuteCommandAsync(connection, $"EXEC sp_rename '{table}', '{newTableName}'");
-                }
+                case 1:
+                    while (true)
+                    {
+                        Console.WriteLine("Please, Insert a connectionString from DB:");
+                        Console.Write("Connection String: ");
+                        connectionString = Console.ReadLine()?.Trim()!;
+                        try
+                        {
+                            connection = await Database.GetDatabaseConnectionAsync(connectionString);
+                            break;
+                        }
+                        catch
+                        {
+                            Console.WriteLine("Please try again.");
+                        }
+                    }
+                    break;
+                case 2:
+                    while (true)
+                    {
+                        Console.WriteLine("Please, Insert a directory path:");
+                        Console.Write("Path: ");
+                        rootPath = Console.ReadLine()?.Trim()!;
+
+                        if (Directory.Exists(rootPath)) break;
+
+                        Utils.ConsoleErrorText();
+                        Console.WriteLine("O diretório especificado não existe.");
+                        Utils.ConsoleErrorText();
+                    }
+                    break;
+
             }
 
-            foreach (string table in tables) // Renomear colunas dentro de cada tabela
+            Utils.ConsoleWarningText();
+            Console.WriteLine("String Comparison is case-sensitive.\nEx. 'S' is diferent from 's'.");
+            Utils.ConsoleWarningText();
+
+            Console.WriteLine("Please, Insert an existing string to be replaced:");
+            Console.Write("Old string: ");
+            oldString = Console.ReadLine()?.Trim()!;
+            Console.WriteLine("\nPlease, Insert a new string for replacement:");
+            Console.Write("New string: ");
+            newString = Console.ReadLine()?.Trim()!;
+        }
+
+        #region Rename DataBase itens
+        private static async Task RenameDatabaseObjectsAsync()
+        {
+            while (true)
             {
-                string[] columns = await GetColumnsAsync(connection, table);
-                foreach (string column in columns)
+                int[] options = [0, 1, 2, 3];
+
+                Console.WriteLine("Select one option for rename:\n1) Rename Only Values from Tables.\n2) Rename Only Columns from Tables.\n3) Rename Only Tables Name.\n0) Rename All Options.\n");
+                Console.Write("Option: ");
+
+                if (int.TryParse(Console.ReadLine()?.Trim(), out int option))
                 {
-                    if (column.Contains(oldString))
+                    if (options.Contains(option))
                     {
-                        string newColumnName = column.Replace(oldString, newString);
-                        Console.WriteLine($"Renomeando coluna {column} na tabela {table} para {newColumnName}...");
-                        await ExecuteCommandAsync(connection, $"EXEC sp_rename '{table}.{column}', '{newColumnName}', 'COLUMN'");
+                        List<(string schema, string table)> tables = await Database.GetTablesWithSchemaAsync(connection);
+                        switch (option)
+                        {
+                            case 0:
+                                //Renomear o nome das colunas
+                                await Database.RenameColumns(connection, tables, oldString, newString);
+                                // Atualizar dados dentro das tabelas
+                                await Database.RenameValues(connection, tables, oldString, newString);
+                                // Renomear tabelas
+                                await Database.RenameTables(connection, tables, oldString, newString);
+                                break;
+                            case 1:
+                                // Atualizar dados dentro das tabelas
+                                await Database.RenameValues(connection, tables, oldString, newString);
+                                break;
+                            case 2:
+                                //Renomear o nome das colunas
+                                await Database.RenameColumns(connection, tables, oldString, newString);
+                                break;
+                            case 3:
+                                // Renomear tabelas
+                                await Database.RenameTables(connection, tables, oldString, newString);
+                                break;
+                        }
+                        break;
+                    }
+                    else
+                    {
+                        Utils.ConsoleErrorText();
+                        Console.WriteLine($"Option {option} is not valid!, please insert again");
+                        Utils.ConsoleErrorText();
                     }
                 }
+                else
+                {
+                    Utils.ConsoleErrorText();
+                    Console.WriteLine("Please, insert only number option!");
+                    Utils.ConsoleErrorText();
+                }
             }
 
-            foreach (string table in tables) // Atualizar dados dentro das tabelas
+            if (connection.State == System.Data.ConnectionState.Open || connection.State == System.Data.ConnectionState.Executing)
             {
-                string[] columns = await GetColumnsAsync(connection, table);
-                foreach (string column in columns)
+                await connection.DisposeAsync();
+            }
+        }
+
+        #endregion Rename DataBase itens
+
+        #region Rename Folder and itens
+
+        private static async Task RenameFilesAndFolders(string rootPath, string oldName, string newName)
+        {
+            while (true)
+            {
+                int[] options = [0, 1, 2, 3];
+
+                Console.WriteLine("Select one option for replace:\n1) Replace Only Folders.\n2) Replace Only Archives.\n3) Replace Only Contents from Archives.\n0) Replace All Options.\n");
+                Console.Write("Option: ");
+
+                if (int.TryParse(Console.ReadLine()?.Trim(), out int option))
                 {
-                    Console.WriteLine($"Atualizando dados na coluna {column} da tabela {table}...");
-                    string updateCommand = $"UPDATE {table} SET {column} = REPLACE({column}, @oldValue, @newValue) WHERE {column} LIKE '%' + @oldValue + '%'";
-                    using SqlCommand command = new(updateCommand, connection);
-                    _ = command.Parameters.AddWithValue("@oldValue", oldString);
-                    _ = command.Parameters.AddWithValue("@newValue", newString);
-                    _ = await command.ExecuteNonQueryAsync();
+                    if (options.Contains(option))
+                    {
+                        switch (option)
+                        {
+                            case 0:
+                                // Renomeia os arquivos
+                                Local.RenameOnlyArchives(rootPath, oldName, newName);
+                                // Renomeia as pastas
+                                Local.RenameOnlyFolders(rootPath, oldName, newName);
+                                // Substitui o conteúdo do arquivo
+                                await Local.RenameOnlyContent(rootPath, oldName, newName);
+                                break;
+                            case 1:
+                                // Renomeia as pastas
+                                Local.RenameOnlyFolders(rootPath, oldName, newName);
+                                break;
+                            case 2:
+                                // Renomeia os arquivos
+                                Local.RenameOnlyArchives(rootPath, oldName, newName);
+                                break;
+                            case 3:
+                                // Substitui o conteúdo do arquivo
+                                await Local.RenameOnlyContent(rootPath, oldName, newName);
+                                break;
+                        }
+                        break;
+                    }
+                    else
+                    {
+                        Utils.ConsoleErrorText();
+                        Console.WriteLine($"Option {option} is not valid!, please insert again");
+                        Utils.ConsoleErrorText();
+                    }
+                }
+                else
+                {
+                    Utils.ConsoleErrorText();
+                    Console.WriteLine("Please, insert only number option!");
+                    Utils.ConsoleErrorText();
                 }
             }
         }
-
-
-        private static async Task<string[]> GetTablesAsync(SqlConnection connection)
-        {
-            List<string> tables = [];
-            string query = "SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE'";
-            using (SqlCommand command = new(query, connection))
-            {
-                using SqlDataReader reader = await command.ExecuteReaderAsync();
-                while (await reader.ReadAsync())
-                {
-                    tables.Add(reader.GetString(0));
-                }
-            }
-            return tables.ToArray();
-        }
-
-
-        private static async Task<string[]> GetColumnsAsync(SqlConnection connection, string tableName)
-        {
-            List<string> columns = [];
-            string query = $"SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = '{tableName}'";
-            using (SqlCommand command = new(query, connection))
-            {
-                using SqlDataReader reader = await command.ExecuteReaderAsync();
-                while (await reader.ReadAsync())
-                {
-                    columns.Add(reader.GetString(0));
-                }
-            }
-            return columns.ToArray();
-        }
-
-
-        private static async Task ExecuteCommandAsync(SqlConnection connection, string commandText)
-        {
-            using SqlCommand command = new(commandText, connection);
-            _ = await command.ExecuteNonQueryAsync();
-        }
+        #endregion Rename Folder and itens
     }
 }
