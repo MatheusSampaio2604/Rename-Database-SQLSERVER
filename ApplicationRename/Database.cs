@@ -34,7 +34,6 @@ namespace RenameDatabaseSQLSERVER
 
         #endregion
 
-
         #region Get data from DB
         private static async Task<string[]> GetColumnsAsync(SqlConnection connection, string schema, string table)
         {
