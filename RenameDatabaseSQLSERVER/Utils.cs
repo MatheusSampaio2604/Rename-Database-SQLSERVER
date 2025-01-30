@@ -26,5 +26,12 @@ namespace RenameDatabaseSQLSERVER
             Console.WriteLine("\n**********ERROR**********\n");
             Console.ResetColor();
         }
+
+        internal static string ReturnReadLineConsole(string writeLine, string write)
+        {
+            Console.WriteLine(writeLine);
+            Console.Write(write);
+            return Console.ReadLine()?.Trim()!;
+        }
     }
 }

@@ -142,20 +142,31 @@ namespace RenameDatabaseSQLSERVER
                 string[] columns = await GetStringColumnsAsync(connection, schema, table);
                 foreach (string column in columns)
                 {
-                    Console.WriteLine($"Atualizando dados na coluna {column} da tabela {schema}.{table}...");
                     try
                     {
-                        string updateCommand = $@"
-                        UPDATE [{schema}].[{table}]
-                        SET [{column}] = REPLACE([{column}], @oldValue, @newValue)
-                        WHERE [{column}] LIKE '%' + CAST(@oldValue AS NVARCHAR(MAX)) + '%'";
+                        string checkQuery = $@"
+                            SELECT COUNT(*) 
+                            FROM [{schema}].[{table}]
+                            WHERE [{column}] LIKE '%' + CAST(@oldValue AS NVARCHAR(MAX)) + '%'";
 
-                        using SqlCommand command = new(updateCommand, connection);
-                        command.Parameters.AddWithValue("@oldValue", oldString);
-                        command.Parameters.AddWithValue("@newValue", newString);
-                        int rowsAffected = await command.ExecuteNonQueryAsync();
+                        using SqlCommand checkCommand = new(checkQuery, connection);
+                        checkCommand.Parameters.AddWithValue("@oldValue", oldString);
+                        int? count = (int?)await checkCommand.ExecuteScalarAsync();
 
-                        Console.WriteLine($"{rowsAffected} registros atualizados na tabela {schema}.{table}.");
+                        if (count != null && count > 0)
+                        {
+                            string updateCommand = $@"
+                                UPDATE [{schema}].[{table}]
+                                SET [{column}] = REPLACE([{column}], @oldValue, @newValue)
+                                WHERE [{column}] LIKE '%' + CAST(@oldValue AS NVARCHAR(MAX)) + '%'";
+
+                            using SqlCommand command = new(updateCommand, connection);
+                            command.Parameters.AddWithValue("@oldValue", oldString);
+                            command.Parameters.AddWithValue("@newValue", newString);
+                            int rowsAffected = await command.ExecuteNonQueryAsync();
+
+                            Console.WriteLine($"{rowsAffected} registros atualizados na tabela {schema}.{table}.");
+                        }
                     }
                     catch (Exception ex)
                     {

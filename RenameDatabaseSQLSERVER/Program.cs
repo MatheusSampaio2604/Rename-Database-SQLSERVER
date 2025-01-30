@@ -50,7 +50,7 @@ namespace RenameDatabaseSQLSERVER
 
         static bool AskToRetry()
         {
-            Console.Write("\n Do you want to perform another renaming operation? (y/n): ");
+            Console.Write("\nDo you want to perform another renaming operation? (y/n): ");
             string? response = Console.ReadLine()?.Trim().ToLower();
             return response == "y" || response == "yes";
         }
@@ -76,6 +76,8 @@ namespace RenameDatabaseSQLSERVER
             }
         }
 
+
+
         static async Task DefineProperties()
         {
             switch (typeServiceSelected)
@@ -83,9 +85,7 @@ namespace RenameDatabaseSQLSERVER
                 case 1:
                     while (true)
                     {
-                        Console.WriteLine("Please, Insert a connectionString from DB:");
-                        Console.Write("Connection String: ");
-                        connectionString = Console.ReadLine()?.Trim()!;
+                        connectionString = Utils.ReturnReadLineConsole("Please, Insert a connectionString from DB:", "Connection String: ");
                         try
                         {
                             connection = await Database.GetDatabaseConnectionAsync(connectionString);
@@ -100,9 +100,7 @@ namespace RenameDatabaseSQLSERVER
                 case 2:
                     while (true)
                     {
-                        Console.WriteLine("Please, Insert a directory path:");
-                        Console.Write("Path: ");
-                        rootPath = Console.ReadLine()?.Trim()!;
+                        rootPath = Utils.ReturnReadLineConsole("Please, Insert a directory path:", "Path: ");
 
                         if (Directory.Exists(rootPath)) break;
 
@@ -118,12 +116,8 @@ namespace RenameDatabaseSQLSERVER
             Console.WriteLine("String Comparison is case-sensitive.\nEx. 'S' is diferent from 's'.");
             Utils.ConsoleWarningText();
 
-            Console.WriteLine("Please, Insert an existing string to be replaced:");
-            Console.Write("Old string: ");
-            oldString = Console.ReadLine()?.Trim()!;
-            Console.WriteLine("\nPlease, Insert a new string for replacement:");
-            Console.Write("New string: ");
-            newString = Console.ReadLine()?.Trim()!;
+            oldString = Utils.ReturnReadLineConsole("Please, Insert an existing string to be replaced:", "Old string: ");
+            newString = Utils.ReturnReadLineConsole("\nPlease, Insert a new string for replacement:", "New string: ");
         }
 
         #region Rename DataBase itens
@@ -133,45 +127,36 @@ namespace RenameDatabaseSQLSERVER
             {
                 int[] options = [0, 1, 2, 3];
 
-                Console.WriteLine("Select one option for rename:\n1) Rename Only Values from Tables.\n2) Rename Only Columns from Tables.\n3) Rename Only Tables Name.\n0) Rename All Options.\n");
-                Console.Write("Option: ");
+                string writeLine = "Select one option for rename:\n1) Rename Only Values from Tables.\n2) Rename Only Columns from Tables.\n3) Rename Only Tables Name.\n0) Rename All Options.\n";
+                string write = "Option: ";
 
-                if (int.TryParse(Console.ReadLine()?.Trim(), out int option))
+                if (int.TryParse(Utils.ReturnReadLineConsole(writeLine, write), out int option) && options.Contains(option))
                 {
-                    if (options.Contains(option))
+                    List<(string schema, string table)> tables = await Database.GetTablesWithSchemaAsync(connection);
+                    switch (option)
                     {
-                        List<(string schema, string table)> tables = await Database.GetTablesWithSchemaAsync(connection);
-                        switch (option)
-                        {
-                            case 0:
-                                //Renomear o nome das colunas
-                                await Database.RenameColumns(connection, tables, oldString, newString);
-                                // Atualizar dados dentro das tabelas
-                                await Database.RenameValues(connection, tables, oldString, newString);
-                                // Renomear tabelas
-                                await Database.RenameTables(connection, tables, oldString, newString);
-                                break;
-                            case 1:
-                                // Atualizar dados dentro das tabelas
-                                await Database.RenameValues(connection, tables, oldString, newString);
-                                break;
-                            case 2:
-                                //Renomear o nome das colunas
-                                await Database.RenameColumns(connection, tables, oldString, newString);
-                                break;
-                            case 3:
-                                // Renomear tabelas
-                                await Database.RenameTables(connection, tables, oldString, newString);
-                                break;
-                        }
-                        break;
+                        case 0:
+                            //Renomear o nome das colunas
+                            await Database.RenameColumns(connection, tables, oldString, newString);
+                            // Atualizar dados dentro das tabelas
+                            await Database.RenameValues(connection, tables, oldString, newString);
+                            // Renomear tabelas
+                            await Database.RenameTables(connection, tables, oldString, newString);
+                            break;
+                        case 1:
+                            // Atualizar dados dentro das tabelas
+                            await Database.RenameValues(connection, tables, oldString, newString);
+                            break;
+                        case 2:
+                            //Renomear o nome das colunas
+                            await Database.RenameColumns(connection, tables, oldString, newString);
+                            break;
+                        case 3:
+                            // Renomear tabelas
+                            await Database.RenameTables(connection, tables, oldString, newString);
+                            break;
                     }
-                    else
-                    {
-                        Utils.ConsoleErrorText();
-                        Console.WriteLine($"Option {option} is not valid!, please insert again");
-                        Utils.ConsoleErrorText();
-                    }
+                    break;
                 }
                 else
                 {
@@ -197,44 +182,35 @@ namespace RenameDatabaseSQLSERVER
             {
                 int[] options = [0, 1, 2, 3];
 
-                Console.WriteLine("Select one option for replace:\n1) Replace Only Folders.\n2) Replace Only Archives.\n3) Replace Only Contents from Archives.\n0) Replace All Options.\n");
-                Console.Write("Option: ");
+                string writeLine = "Select one option for replace:\n1) Replace Only Folders.\n2) Replace Only Archives.\n3) Replace Only Contents from Archives.\n0) Replace All Options.\n";
+                string write = "Option: ";
 
-                if (int.TryParse(Console.ReadLine()?.Trim(), out int option))
+                if (int.TryParse(Utils.ReturnReadLineConsole(writeLine, write), out int option) && options.Contains(option))
                 {
-                    if (options.Contains(option))
+                    switch (option)
                     {
-                        switch (option)
-                        {
-                            case 0:
-                                // Renomeia os arquivos
-                                Local.RenameOnlyArchives(rootPath, oldName, newName);
-                                // Renomeia as pastas
-                                Local.RenameOnlyFolders(rootPath, oldName, newName);
-                                // Substitui o conteúdo do arquivo
-                                await Local.RenameOnlyContent(rootPath, oldName, newName);
-                                break;
-                            case 1:
-                                // Renomeia as pastas
-                                Local.RenameOnlyFolders(rootPath, oldName, newName);
-                                break;
-                            case 2:
-                                // Renomeia os arquivos
-                                Local.RenameOnlyArchives(rootPath, oldName, newName);
-                                break;
-                            case 3:
-                                // Substitui o conteúdo do arquivo
-                                await Local.RenameOnlyContent(rootPath, oldName, newName);
-                                break;
-                        }
-                        break;
+                        case 0:
+                            // Renomeia os arquivos
+                            Local.RenameOnlyArchives(rootPath, oldName, newName);
+                            // Renomeia as pastas
+                            Local.RenameOnlyFolders(rootPath, oldName, newName);
+                            // Substitui o conteúdo do arquivo
+                            await Local.RenameOnlyContent(rootPath, oldName, newName);
+                            break;
+                        case 1:
+                            // Renomeia as pastas
+                            Local.RenameOnlyFolders(rootPath, oldName, newName);
+                            break;
+                        case 2:
+                            // Renomeia os arquivos
+                            Local.RenameOnlyArchives(rootPath, oldName, newName);
+                            break;
+                        case 3:
+                            // Substitui o conteúdo do arquivo
+                            await Local.RenameOnlyContent(rootPath, oldName, newName);
+                            break;
                     }
-                    else
-                    {
-                        Utils.ConsoleErrorText();
-                        Console.WriteLine($"Option {option} is not valid!, please insert again");
-                        Utils.ConsoleErrorText();
-                    }
+                    break;
                 }
                 else
                 {
@@ -244,6 +220,7 @@ namespace RenameDatabaseSQLSERVER
                 }
             }
         }
+
         #endregion Rename Folder and itens
     }
 }
