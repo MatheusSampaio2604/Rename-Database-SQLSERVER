@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace RenameDatabaseSQLSERVER
+namespace ReplaceStringOptions
 {
     internal class Local
     {
@@ -26,7 +26,7 @@ namespace RenameDatabaseSQLSERVER
                         Console.WriteLine($"File renamed: {filePath} -> {newFilePath}");
                         //});
                     }
-                    catch (IOException ioEx) when (ioEx.Message.Contains("já existente"))
+                    catch (IOException ioEx)/* when (ioEx.Message.Contains("já existente"))*/
                     {
                         Console.WriteLine($"Error: Destination file already exists. {newFilePath}");
                     }
@@ -65,6 +65,12 @@ namespace RenameDatabaseSQLSERVER
             {
                 try
                 {
+                    string extension = Path.GetExtension(filePath);
+                    if (Utils.TextFileExtensions.Contains(extension, StringComparer.OrdinalIgnoreCase))
+                    {
+                        continue;
+                    }
+
                     string content = File.ReadAllText(filePath);
                     if (content.Contains(oldName/*, StringComparison.OrdinalIgnoreCase*/))
                     {

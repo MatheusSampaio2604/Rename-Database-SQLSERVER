@@ -1,11 +1,15 @@
 ﻿using Microsoft.Data.SqlClient;
+using System.Globalization;
+using System.Resources;
 
 //Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=RCASCRANE;Persist Security Info=True;MultipleActiveResultSets=True;Connection Timeout=5
 
-namespace RenameDatabaseSQLSERVER
+namespace ReplaceStringOptions
 {
+
     internal class Program
     {
+        private static ResourceManager resManager = new ResourceManager("ReplaceStringOptions.Resources.Strings", typeof(Program).Assembly);
         private static int typeServiceSelected = 0;
 
         private static string connectionString = string.Empty; // Database
@@ -18,6 +22,10 @@ namespace RenameDatabaseSQLSERVER
 
         private static async Task Main()
         {
+
+            SetLanguage();
+            Console.WriteLine(A("WelcomeMessage"));
+
             do
             {
                 SelectServiceType();
@@ -28,18 +36,18 @@ namespace RenameDatabaseSQLSERVER
                     {
                         case 1: //Database
                             Utils.WriteOnlyCharacter('*', 60);
-                            Console.WriteLine("Accessing the database...\n");
+                            Console.WriteLine($"{A("AccessDB")}...\n");
                             await RenameDatabaseObjectsAsync();
                             break;
                         case 2: // Files
                             Utils.WriteOnlyCharacter('*', 60);
-                            Console.WriteLine("\n\nAccessing the folder...\n\n");
+                            Console.WriteLine($"\n\n{A("AccessFolder")}...\n\n");
                             await RenameFilesAndFolders(rootPath, oldString, newString);
                             break;
                         default:
                             return;
                     }
-                    Console.WriteLine("Complete rename.");
+                    Console.WriteLine(A("CompleteRename"));
                 }
                 catch (Exception ex)
                 {
@@ -50,7 +58,7 @@ namespace RenameDatabaseSQLSERVER
 
         static bool AskToRetry()
         {
-            Console.Write("\nDo you want to perform another renaming operation? (y/n): ");
+            Console.Write($"\n{A("tryAgain")} (y/n): ");
             string? response = Console.ReadLine()?.Trim().ToLower();
             return response == "y" || response == "yes";
         }
@@ -60,8 +68,8 @@ namespace RenameDatabaseSQLSERVER
             int[] validValues = [1, 2];
             while (true)
             {
-                Console.WriteLine("\n Please, Select:\n 1) Rename Database;\n 2) Rename Files and Folders;\n ");
-                Console.Write("Value: ");
+                Console.WriteLine($"\n{A("ChooseOption")}\n    1) {A("Rename")} {A("db")};\n    2) {A("Rename")} {A("files")} {A("&")} {A("folders")};\n ");
+                Console.Write(A("value"));
                 if (int.TryParse(Console.ReadLine()?.Trim(), out int value) && validValues.Contains(value))
                 {
                     typeServiceSelected = value;
@@ -70,11 +78,23 @@ namespace RenameDatabaseSQLSERVER
                 else
                 {
                     Utils.ConsoleErrorText();
-                    Console.WriteLine("Invalid input. Please select a valid option.");
+                    Console.WriteLine(A("InvalidInput"));
                     Utils.ConsoleErrorText();
                 }
             }
         }
+
+        /// <summary>
+        /// get text by key to view the program in the selected language
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        public static string? A(string key)
+        {
+            return resManager.GetString(key);
+        }
+
+
 
         static async Task DefineProperties()
         {
@@ -83,7 +103,7 @@ namespace RenameDatabaseSQLSERVER
                 case 1:
                     while (true)
                     {
-                        connectionString = Utils.ReturnReadLineConsole("Please, Insert a connectionString from DB:", "Connection String: ");
+                        connectionString = Utils.ReturnReadLineConsole("Please, Insert a connectionString for DB:", A("value")!);
                         try
                         {
                             connection = await Database.GetDatabaseConnectionAsync(connectionString);
@@ -91,19 +111,19 @@ namespace RenameDatabaseSQLSERVER
                         }
                         catch
                         {
-                            Console.WriteLine("Please try again.");
+                            Console.WriteLine(A("EnterAgain"));
                         }
                     }
                     break;
                 case 2:
                     while (true)
                     {
-                        rootPath = Utils.ReturnReadLineConsole("Please, Insert a directory path:", "Path: ");
+                        rootPath = Utils.ReturnReadLineConsole($"{A("EnterValue")} a {A("dirPath")}:", A("value")!);
 
                         if (Directory.Exists(rootPath)) break;
 
                         Utils.ConsoleErrorText();
-                        Console.WriteLine("The specified directory does not exist.");
+                        Console.WriteLine(A("DirNotFound"));
                         Utils.ConsoleErrorText();
                     }
                     break;
@@ -116,6 +136,25 @@ namespace RenameDatabaseSQLSERVER
 
             oldString = Utils.ReturnReadLineConsole("Please, Insert an existing string to be replaced:", "Old string: ");
             newString = Utils.ReturnReadLineConsole("\nPlease, Insert a new string for replacement:", "New string: ");
+        }
+
+        static void SetLanguage()
+        {
+            Console.WriteLine("Choose a language / Escolha um idioma / Elige un idioma: \n1) English \n2) Português \n3) Español");
+            string? choice = Console.ReadLine()?.Trim();
+
+            switch (choice)
+            {
+                case "2":
+                    CultureInfo.CurrentUICulture = new CultureInfo("pt-BR");
+                    break;
+                case "3":
+                    CultureInfo.CurrentUICulture = new CultureInfo("es-ES");
+                    break;
+                default:
+                    CultureInfo.CurrentUICulture = new CultureInfo("en-US");
+                    break;
+            }
         }
 
         #region Rename DataBase itens
