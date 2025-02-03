@@ -88,11 +88,29 @@ namespace ReplaceStringOptions.Resources {
         }
         
         /// <summary>
+        ///   Consulta uma cadeia de caracteres localizada semelhante a String Comparison is case-sensitive..
+        /// </summary>
+        internal static string CaseSensEnabled {
+            get {
+                return ResourceManager.GetString("CaseSensEnabled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Consulta uma cadeia de caracteres localizada semelhante a Please, Select:.
         /// </summary>
         internal static string ChooseOption {
             get {
                 return ResourceManager.GetString("ChooseOption", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Consulta uma cadeia de caracteres localizada semelhante a Select one option for replace:.
+        /// </summary>
+        internal static string ChooseOptionReplace {
+            get {
+                return ResourceManager.GetString("ChooseOptionReplace", resourceCulture);
             }
         }
         
@@ -151,6 +169,15 @@ namespace ReplaceStringOptions.Resources {
         }
         
         /// <summary>
+        ///   Consulta uma cadeia de caracteres localizada semelhante a Error.
+        /// </summary>
+        internal static string Error {
+            get {
+                return ResourceManager.GetString("Error", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Consulta uma cadeia de caracteres localizada semelhante a Files.
         /// </summary>
         internal static string files {
@@ -169,6 +196,15 @@ namespace ReplaceStringOptions.Resources {
         }
         
         /// <summary>
+        ///   Consulta uma cadeia de caracteres localizada semelhante a Please, Insert a connectionString for DB.
+        /// </summary>
+        internal static string InsertDB {
+            get {
+                return ResourceManager.GetString("InsertDB", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Consulta uma cadeia de caracteres localizada semelhante a Invalid input..
         /// </summary>
         internal static string InvalidInput {
@@ -178,11 +214,110 @@ namespace ReplaceStringOptions.Resources {
         }
         
         /// <summary>
+        ///   Consulta uma cadeia de caracteres localizada semelhante a is diferent from.
+        /// </summary>
+        internal static string IsDiffFrom {
+            get {
+                return ResourceManager.GetString("IsDiffFrom", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Consulta uma cadeia de caracteres localizada semelhante a Please, Insert a new string for replacement:.
+        /// </summary>
+        internal static string NewVal {
+            get {
+                return ResourceManager.GetString("NewVal", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Consulta uma cadeia de caracteres localizada semelhante a Please, Insert an existing string to be replaced:.
+        /// </summary>
+        internal static string OldVal {
+            get {
+                return ResourceManager.GetString("OldVal", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Consulta uma cadeia de caracteres localizada semelhante a Replace Only Columns from Tables..
+        /// </summary>
+        internal static string OptDBOnlyColumns {
+            get {
+                return ResourceManager.GetString("OptDBOnlyColumns", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Consulta uma cadeia de caracteres localizada semelhante a Replace Only Tables Name..
+        /// </summary>
+        internal static string OptDBOnlyTables {
+            get {
+                return ResourceManager.GetString("OptDBOnlyTables", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Consulta uma cadeia de caracteres localizada semelhante a Replace Only Values from Tables..
+        /// </summary>
+        internal static string OptDBOnlyValues {
+            get {
+                return ResourceManager.GetString("OptDBOnlyValues", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Consulta uma cadeia de caracteres localizada semelhante a Replace Only Archives..
+        /// </summary>
+        internal static string OptLocalOnlyArchives {
+            get {
+                return ResourceManager.GetString("OptLocalOnlyArchives", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Consulta uma cadeia de caracteres localizada semelhante a Replace Only Contents from Archives..
+        /// </summary>
+        internal static string OptLocalOnlyContents {
+            get {
+                return ResourceManager.GetString("OptLocalOnlyContents", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Consulta uma cadeia de caracteres localizada semelhante a Replace Only Folders..
+        /// </summary>
+        internal static string OptLocalOnlyFolders {
+            get {
+                return ResourceManager.GetString("OptLocalOnlyFolders", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Consulta uma cadeia de caracteres localizada semelhante a Replace All Options..
+        /// </summary>
+        internal static string OptReplaceAll {
+            get {
+                return ResourceManager.GetString("OptReplaceAll", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Consulta uma cadeia de caracteres localizada semelhante a Rename.
         /// </summary>
         internal static string Rename {
             get {
                 return ResourceManager.GetString("Rename", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Consulta uma cadeia de caracteres localizada semelhante a Success.
+        /// </summary>
+        internal static string Success {
+            get {
+                return ResourceManager.GetString("Success", resourceCulture);
             }
         }
         
@@ -201,6 +336,24 @@ namespace ReplaceStringOptions.Resources {
         internal static string value {
             get {
                 return ResourceManager.GetString("value", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Consulta uma cadeia de caracteres localizada semelhante a Warning.
+        /// </summary>
+        internal static string Warning {
+            get {
+                return ResourceManager.GetString("Warning", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Consulta uma cadeia de caracteres localizada semelhante a Please, insert only a number option!.
+        /// </summary>
+        internal static string WarnNumberOption {
+            get {
+                return ResourceManager.GetString("WarnNumberOption", resourceCulture);
             }
         }
         

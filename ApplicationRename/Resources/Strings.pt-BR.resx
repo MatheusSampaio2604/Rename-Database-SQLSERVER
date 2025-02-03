@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -133,7 +133,7 @@
     <value>Renomeação Concluida!</value>
   </data>
   <data name="db" xml:space="preserve">
-    <value>Bando de dados</value>
+    <value>Banco de dados</value>
   </data>
   <data name="DirNotFound" xml:space="preserve">
     <value>O diretório especificado não existe.</value>
@@ -159,13 +159,64 @@
   <data name="Rename" xml:space="preserve">
     <value>Renomear</value>
   </data>
+  <data name="Success" xml:space="preserve">
+    <value>Sucesso</value>
+  </data>
   <data name="tryAgain" xml:space="preserve">
     <value>Deseja executar outra operação de renomeação?</value>
   </data>
   <data name="value" xml:space="preserve">
     <value>Valor: </value>
   </data>
+  <data name="Warning" xml:space="preserve">
+    <value>Aviso</value>
+  </data>
+  <data name="WarnNumberOption" xml:space="preserve">
+    <value>Por favor, insira apenas uma opção numérica!</value>
+  </data>
   <data name="WelcomeMessage" xml:space="preserve">
     <value>Bem-vindo ao programa!</value>
+  </data>
+  <data name="ChooseOptionReplace" xml:space="preserve">
+    <value>Selecione uma opção para substituir:</value>
+  </data>
+  <data name="OptReplaceAll" xml:space="preserve">
+    <value>Substituir todas as opções.</value>
+  </data>
+  <data name="OptDBOnlyValues" xml:space="preserve">
+    <value>Substituir apenas valores de tabelas.</value>
+  </data>
+  <data name="OptDBOnlyColumns" xml:space="preserve">
+    <value>Substituir apenas colunas de tabelas.</value>
+  </data>
+  <data name="OptDBOnlyTables" xml:space="preserve">
+    <value>Substituir apenas nomes de tabelas.</value>
+  </data>
+  <data name="OptLocalOnlyFolders" xml:space="preserve">
+    <value>Substituir apenas pastas.</value>
+  </data>
+  <data name="OptLocalOnlyArchives" xml:space="preserve">
+    <value>Substituir apenas arquivos.</value>
+  </data>
+  <data name="OptLocalOnlyContents" xml:space="preserve">
+    <value>Substituir apenas conteúdo de arquivos.</value>
+  </data>
+  <data name="Error" xml:space="preserve">
+    <value>Erro</value>
+  </data>
+  <data name="InsertDB" xml:space="preserve">
+    <value>Por favor, insira uma String de conexão para DB</value>
+  </data>
+  <data name="CaseSensEnabled" xml:space="preserve">
+    <value>A comparação de strings diferencia maiúsculas de minúsculas.</value>
+  </data>
+  <data name="IsDiffFrom" xml:space="preserve">
+    <value>é diferente de</value>
+  </data>
+  <data name="OldVal" xml:space="preserve">
+    <value>Por favor, insira uma string existente para ser substituída:</value>
+  </data>
+  <data name="NewVal" xml:space="preserve">
+    <value>Por favor, insira uma nova string para substituição:</value>
   </data>
 </root>

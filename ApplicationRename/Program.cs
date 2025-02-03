@@ -22,7 +22,6 @@ namespace ReplaceStringOptions
 
         private static async Task Main()
         {
-
             SetLanguage();
             Console.WriteLine(A("WelcomeMessage"));
 
@@ -103,7 +102,7 @@ namespace ReplaceStringOptions
                 case 1:
                     while (true)
                     {
-                        connectionString = Utils.ReturnReadLineConsole("Please, Insert a connectionString for DB:", A("value")!);
+                        connectionString = Utils.ReturnReadLineConsole(A("InsertDB")!, A("value")!);
                         try
                         {
                             connection = await Database.GetDatabaseConnectionAsync(connectionString);
@@ -126,16 +125,19 @@ namespace ReplaceStringOptions
                         Console.WriteLine(A("DirNotFound"));
                         Utils.ConsoleErrorText();
                     }
-                    break;
 
+                    Utils.ConsoleWarningText();
+                    Console.WriteLine($"{A("CaseSensEnabled")}\nEx. 'B' {A("IsDiffFrom")} 'b'.");
+                    Utils.ConsoleWarningText();
+                    break;
             }
 
-            Utils.ConsoleWarningText();
-            Console.WriteLine("String Comparison is case-sensitive.\nEx. 'S' is diferent from 's'.");
-            Utils.ConsoleWarningText();
+            //Utils.ConsoleWarningText();
+            //Console.WriteLine($"{A("CaseSensEnabled")}\nEx. 'B' {A("IsDiffFrom")} 'b'.");
+            //Utils.ConsoleWarningText();
 
-            oldString = Utils.ReturnReadLineConsole("Please, Insert an existing string to be replaced:", "Old string: ");
-            newString = Utils.ReturnReadLineConsole("\nPlease, Insert a new string for replacement:", "New string: ");
+            oldString = Utils.ReturnReadLineConsole(A("OldVal")!, A("value")!);
+            newString = Utils.ReturnReadLineConsole($"\n{A("NewVal")}", A("value")!);
         }
 
         static void SetLanguage()
@@ -143,31 +145,32 @@ namespace ReplaceStringOptions
             Console.WriteLine("Choose a language / Escolha um idioma / Elige un idioma: \n1) English \n2) Português \n3) Español");
             string? choice = Console.ReadLine()?.Trim();
 
-            switch (choice)
+            CultureInfo.CurrentUICulture = choice switch
             {
-                case "2":
-                    CultureInfo.CurrentUICulture = new CultureInfo("pt-BR");
-                    break;
-                case "3":
-                    CultureInfo.CurrentUICulture = new CultureInfo("es-ES");
-                    break;
-                default:
-                    CultureInfo.CurrentUICulture = new CultureInfo("en-US");
-                    break;
-            }
+                "2" => new CultureInfo("pt-BR"),
+                "3" => new CultureInfo("es-ES"),
+                _ => new CultureInfo("en-US"),
+            };
+
+
         }
 
         #region Rename DataBase itens
+
         private static async Task RenameDatabaseObjectsAsync()
         {
             while (true)
             {
                 int[] options = [0, 1, 2, 3];
 
-                string writeLine = "Select one option for rename:\n1) Rename Only Values from Tables.\n2) Rename Only Columns from Tables.\n3) Rename Only Tables Name.\n0) Rename All Options.\n";
-                string write = "Option: ";
+                string writeLine = $"{A("ChooseOptionReplace")}\n    " +
+                                   $"1) {A("OptDBOnlyValues")}\n    " +
+                                   $"2) {A("OptDBOnlyColumns")}\n    " +
+                                   $"3) {A("OptDBOnlyTables")}\n    " +
+                                   $"0) {A("OptReplaceAll")}\n";
 
-                if (int.TryParse(Utils.ReturnReadLineConsole(writeLine, write), out int option) && options.Contains(option))
+
+                if (int.TryParse(Utils.ReturnReadLineConsole(writeLine, A("value")!), out int option) && options.Contains(option))
                 {
                     List<(string schema, string table)> tables = await Database.GetTablesWithSchemaAsync(connection);
                     switch (option)
@@ -198,7 +201,7 @@ namespace ReplaceStringOptions
                 else
                 {
                     Utils.ConsoleErrorText();
-                    Console.WriteLine("Please, insert only number option!");
+                    Console.WriteLine(A("WarnNumberOption"));
                     Utils.ConsoleErrorText();
                 }
             }
@@ -219,10 +222,13 @@ namespace ReplaceStringOptions
             {
                 int[] options = [0, 1, 2, 3];
 
-                string writeLine = "Select one option for replace:\n1) Replace Only Folders.\n2) Replace Only Archives.\n3) Replace Only Contents from Archives.\n0) Replace All Options.\n";
-                string write = "Option: ";
+                string writeLine = $"{A("ChooseOptionReplace")}\n    " +
+                                   $"1) {A("OptLocalOnlyFolders")}\n    " +
+                                   $"2) {A("OptLocalOnlyArchives")}\n    " +
+                                   $"3) {A("OptLocalOnlyContents")}\n    " +
+                                   $"0) {A("OptReplaceAll")}\n";
 
-                if (int.TryParse(Utils.ReturnReadLineConsole(writeLine, write), out int option) && options.Contains(option))
+                if (int.TryParse(Utils.ReturnReadLineConsole(writeLine, A("value")!), out int option) && options.Contains(option))
                 {
                     switch (option)
                     {
@@ -252,7 +258,7 @@ namespace ReplaceStringOptions
                 else
                 {
                     Utils.ConsoleErrorText();
-                    Console.WriteLine("Please, insert only number option!");
+                    Console.WriteLine(A("WarnNumberOption"));
                     Utils.ConsoleErrorText();
                 }
             }
